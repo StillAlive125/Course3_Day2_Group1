@@ -5,6 +5,8 @@ format: html
 editor: visual
 ---
 
+# **Course 3, Day 2: Functional Genomics**
+
 ### **Load Libraries**
 
 ```{r}
@@ -23,13 +25,13 @@ for(i in seq_along(p_check)){
     BiocManager::install(p_check[i], force = TRUE)
   }
 }
+
+#Install the ggVennDiagram package
+install.packages("ggVennDiagram")
 ```
 
 ```{r}
 #| echo: false
-#Install the ggVennDiagram package
-install.packages("ggVennDiagram")
-
 #Load packages
 library("tidyverse")
 library("Gviz")
@@ -39,4 +41,22 @@ library("Biostrings")
 library("GO.db")
 library("AnnotationDbi")
 library("ggVennDiagram")
+```
+
+## **Phase 2: Structural Visualization (Zooming In)**
+
+### **1. Identifying the Largest Contigs**
+
+```{r}
+
+gff_path <- "data/data_kimia/Saccharomyces_cerevisiae.gff3"
+
+txdb_demo <- makeTxDbFromGFF(gff_path, format = "gff3")
+
+lns <- seqlengths(txdb_demo@.xData)
+txdb_demo
+
+biostring_assembly <- Biostrings::readDNAStringSet("data/data_kimia/Myles_consensus.fasta")
+which(width(biostring_assembly)==max(width(biostring_assembly)))
+biostring_assembly[231]
 ```
