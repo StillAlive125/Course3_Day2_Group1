@@ -115,3 +115,46 @@ plot_matches <- plotTracks(list(axis_track, fung_track),
            chromosome = seqlevels(GRanges_gff)[113],
            main = "Funannotate Predictions: Matches")
 ```
+
+**Assignment Question 2:** Component of the TREX complex required for nuclear mRNA export;
+
+## **Phase 4: Global Functional Summary (Zooming Out)**
+
+```{r}
+separated_GO <- annotations_eggnog_km %>%
+  separate_rows(GOs, sep = ",")
+
+GO_TERMS <- AnnotationDbi::select(GO.db,
+                                      keys =unique(separated_GO$GOs),
+                                      columns = c("TERM"),
+                                      keytype = "GOID")
+
+separated_GO <- left_join(separated_GO,GO_TERMS, by= c("GOs" = "GOID"))
+
+top_ten <- separated_GO %>%
+  count(TERM, sort = TRUE) %>%
+  filter(!is.na(TERM)) %>% 
+  slice_head(n=10)
+```
+
+```{r}
+#| warning: false
+#| message: false
+library(ggplot2)
+library(forcats)
+
+ ggplot(top_ten, aes(x = fct_reorder(TERM, n), y = n)) + 
+  geom_bar(stat = "identity") + 
+  coord_flip() + # Makes long labels readable
+  labs(x = "GO Term", y = "Count")
+
+```
+
+## **Phase 5: Comparative Analysis (The Deep Dive)**
+
+```{r}
+# Example search terms: "glycolysis", "fermentation"
+pathway_hits <- annotations_eggnog_km %>%
+  filter(str_detect(Description, regex("alcohol dehydrogenase", ignore_case = TRUE)))
+
+```
