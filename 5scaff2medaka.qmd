@@ -3,3 +3,34 @@ title: "5scaff2medaka"
 format: html
 ---
 
+```{r}
+#Loop that checks if the packages GO.db and AnnotationDbi are already installed
+#If not, install them
+
+p_check <- c("GO.db", "AnnotationDbi")
+
+for(i in seq_along(p_check)){
+  
+  if(p_check[i] %in% installed.packages()[,"Package"]){
+    print(paste("Package",p_check[i], "is already installed", sep = " "))
+  }else{
+    print(paste("installing package", p_check[i], sep = " ")) 
+    BiocManager::install(p_check[i], force = TRUE)
+  }
+}
+```
+
+```{r}
+#Install the ggVennDiagram package
+install.packages("ggVennDiagram")
+#Load packages
+library("tidyverse")
+library("Gviz")
+library("GenomicFeatures")
+library("rtracklayer")
+library("Biostrings")
+library("GO.db")
+library("AnnotationDbi")
+library("ggVennDiagram")
+```
+
