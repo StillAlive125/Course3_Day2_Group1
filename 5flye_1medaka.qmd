@@ -82,3 +82,18 @@ Scaffold_289 <- plotTracks(list(axis_track, plot_track),
            main = "Funannotate Predictions: Scaffold 289")
 
 ```
+
+# **Phase 3: Integrating Function**
+
+```{r}
+
+annotations <- readxl::read_excel("data/data_Krish/5scaff1med.emapper.annotations.xlsx", skip = 2)
+
+
+GRanges_gff <- import.gff3("data/data_Krish/Saccharomyces_cerevisiae.gff3")
+
+GRanges_gff <- GRanges_gff[GRanges_gff$type == "mRNA"]
+
+
+GRanges_match <- match(GRanges_gff$ID, annotations$query)
+```
