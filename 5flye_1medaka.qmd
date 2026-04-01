@@ -49,3 +49,36 @@ library("ggVennDiagram")
 ```
 
 # **Phase 2: Structural Visualization**
+
+```{r}
+#| echo: false
+
+
+gff_path <- "data/data_Krish/Saccharomyces_cerevisiae.gff3"
+
+txdb_demo <- makeTxDbFromGFF(gff_path, format = "gff3")
+
+biostring_assembly <- Biostrings:: readDNAStringSet("data/data_Krish/assembly.fasta")
+
+
+which(width(biostring_assembly) == max(width(biostring_assembly)))
+biostring_assembly[209]
+
+which(seqlevels(txdb_demo) == "scaffold_289")
+seqlevels(txdb_demo)
+
+options(ucscChromosomeNames=FALSE)
+
+plot_track <- GeneRegionTrack(txdb_demo, 
+                             chromosome = seqlevels(txdb_demo)[211],
+                             name = "Predicted Genes",
+                             transcriptAnnotation = "gene",
+                             background.title = "darkgreen")
+axis_track <- GenomeAxisTrack()
+Scaffold_289 <- plotTracks(list(axis_track, plot_track),
+           from = 1000, 
+           to = 3500,
+           chromosome = seqlevels(txdb_demo)[211],
+           main = "Funannotate Predictions: Scaffold 289")
+
+```
