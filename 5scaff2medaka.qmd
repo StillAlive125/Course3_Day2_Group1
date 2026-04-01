@@ -68,8 +68,9 @@ Scaffold_211 <- plotTracks(list(axis_track, track),
            chromosome = seqlevels(txdb)[211],
            main = "Funannotate Predictions: Scaffold 211")
 ```
+
 ```{r}
-ggsave("figures/Ankur/Scaffold_211.png", plot = get_last_plot())
+# ggsave("figures/Ankur/Scaffold_211.png", get_last_plot())
 ```
 
 ```{r}
