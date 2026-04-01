@@ -32,6 +32,8 @@ install.packages("ggVennDiagram")
 
 ```{r}
 #| echo: false
+#| warning: false
+#| message: false
 #Load packages
 library("tidyverse")
 library("Gviz")
@@ -53,10 +55,34 @@ gff_path <- "data/data_kimia/Saccharomyces_cerevisiae.gff3"
 
 txdb_demo <- makeTxDbFromGFF(gff_path, format = "gff3")
 
-lns <- seqlengths(txdb_demo@.xData)
+lns <- seqlengths(txdb_demo)
 txdb_demo
+
+names(lns)[which.max(lns)]
 
 biostring_assembly <- Biostrings::readDNAStringSet("data/data_kimia/Myles_consensus.fasta")
 which(width(biostring_assembly)==max(width(biostring_assembly)))
 biostring_assembly[231]
+
+which(seqlevels(txdb_demo)=="scaffold_20")
+seqlevels(txdb_demo)
+
+options(ucscChromosomeNames=FALSE)
+
+s.c_track <- GeneRegionTrack(txdb_demo, 
+                             chromosome = seqlevels(txdb_demo)[113],
+                             name = "Predicted Genes",
+                             transcriptAnnotation = "gene",
+                             background.title = "darkgreen")
+
+axis_track <- GenomeAxisTrack()
+
+scaffold_20_plot <- plotTracks(list(axis_track, s.c_track),
+           from = 1, 
+           to = 45000,
+           chromosome = seqlevels(txdb_demo)[113],
+           main = "Funannotate Predictions: Scaffold 20")
+
+scaffold_20_plot
+
 ```
