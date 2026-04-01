@@ -104,11 +104,11 @@ functional_track <- GeneRegionTrack(GRanges,
 
 axis_track <- GenomeAxisTrack()
 
-track_functional <- plotTracks(list(axis_track, GRanges),
-           from = 7000, 
-           to = 18000,
-           chromosome = seqlevels(GRanges)[211],
-           main = "Funannotate Predictions: Scaffold 211")
+# track_functional <- plotTracks(list(axis_track, GRanges),
+  #         from = 7000, 
+   #        to = 18000,
+    #       chromosome = seqlevels(GRanges)[211],
+     #      main = "Funannotate Predictions: Scaffold 211")
 ```
 
 ```{r}
@@ -136,4 +136,66 @@ plot_matches <- plotTracks(list(axis_track, fung_track),
            to = 18000,
            chromosome = seqlevels(GRanges_gff)[211],
            main = "Funannotate Predictions: Matches")
+```
+
+```{r}
+#Convert to long table
+annotations_long <- annotations %>%
+  separate_rows(GOs, sep = ",")
+
+#Get the terms and the ontology
+annotations_long$TERM <- AnnotationDbi::select(GO.db,
+                                      keys = annotations_long$GOs,
+                                      columns = c("TERM"),
+                                      keytype = "GOID")$TERM
+
+GO_TERM <- AnnotationDbi::select(GO.db,
+                                      keys = unique(annotations_long$GOs),
+                                      columns = c("TERM"),
+                                      keytype = "GOID")
+
+
+annotations_long <- left_join(annotations_long, GO_TERM, by = c("GOs"="GOID"))
+                              
+```
+
+```{r}
+Top_10_terms <- annotations_long |>
+  count(TERM, sort = TRUE) |>
+  filter(!is.na(TERM)) |> 
+  slice_head(n=25)
+```
+
+```{r}
+ggplot(Top_10_terms, aes(x = reorder(TERM, n), y = n)) +
+  geom_col() + 
+  coord_flip() +  # Makes long labels readable
+  labs(x = "GO Term", y = "Count")
+```
+
+```{r}
+# Example search terms: "glycolysis", "fermentation"
+pathway_hits <- annotations %>%
+  filter(str_detect(Description, regex("alcohol", ignore_case = TRUE)))
+
+# Example search terms: "glycolysis", "fermentation"
+pathway_hits2 <- annotations %>%
+  filter(str_detect(Description, regex("adh", ignore_case = TRUE)))
+```
+
+```{r}
+list_of_annotation_data <- list(
+  alcohol = pathway_hits,
+  adh = pathway_hits2
+)
+
+sets <- lapply(list_of_annotation_data, function(df) {
+  df$Preferred_name[df$Preferred_name != "-"]
+})
+
+names(sets) <- names(list_of_annotation_data)
+
+ggVennDiagram(sets)
+
+
 ```
