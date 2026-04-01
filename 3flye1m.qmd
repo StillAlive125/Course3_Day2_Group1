@@ -92,10 +92,26 @@ scaffold_20_plot
 ```{r}
 annotations_eggnog_km <- readxl::read_excel("data/data_kimia/3scaff1med.emapper.annotations.xlsx", skip = 2)
 
-GRanges_gff <- import.gff("data/data_kimia/3scaff.gff")
+GRanges_gff <- import.gff("data/data_kimia/Saccharomyces_cerevisiae.gff3")
 
 match_gff_eggnog <- match(GRanges_gff$ID, annotations_eggnog_km$query)
 
 GRanges_gff$symbol <- annotations_eggnog_km$Preferred_name[match_gff_eggnog]
 
+GRanges_gff$symbol
+
+
+options(ucscChromosomeNames=FALSE)
+fung_track <- GeneRegionTrack(GRanges_gff, 
+                             chromosome = seqlevels(GRanges_gff)[113],
+                             name = "Predicted Genes",
+                             transcriptAnnotation = "symbol",
+                             background.title = "darkgreen")
+axis_track <- GenomeAxisTrack()
+
+plot_matches <- plotTracks(list(axis_track, fung_track),
+           from = 1, 
+           to = 45000,
+           chromosome = seqlevels(GRanges_gff)[113],
+           main = "Funannotate Predictions: Matches")
 ```
