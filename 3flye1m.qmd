@@ -7,10 +7,10 @@ editor: visual
 
 # **Course 3, Day 2: Functional Genomics**
 
-### **Load Libraries**
+## **Load Libraries**
 
 ```{r}
-#| echo: false
+#| eval: false
 #Loop that checks if the packages GO.db and AnnotationDbi are already installed
 #If not, install them
 
@@ -84,5 +84,18 @@ scaffold_20_plot <- plotTracks(list(axis_track, s.c_track),
            main = "Funannotate Predictions: Scaffold 20")
 
 scaffold_20_plot
+
+```
+
+## **Phase 3: Integrating Function (The Overlay)**
+
+```{r}
+annotations_eggnog_km <- readxl::read_excel("data/data_kimia/3scaff1med.emapper.annotations.xlsx", skip = 2)
+
+GRanges_gff <- import.gff("data/data_kimia/3scaff.gff")
+
+match_gff_eggnog <- match(GRanges_gff$ID, annotations_eggnog_km$query)
+
+GRanges_gff$symbol <- annotations_eggnog_km$Preferred_name[match_gff_eggnog]
 
 ```
