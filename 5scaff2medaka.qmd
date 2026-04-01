@@ -22,6 +22,7 @@ for(i in seq_along(p_check)){
 ```
 
 ```{r}
+#| echo: false
 #Install the ggVennDiagram package
 install.packages("ggVennDiagram")
 #Load packages
@@ -34,6 +35,7 @@ library("GO.db")
 library("AnnotationDbi")
 library("ggVennDiagram")
 ```
+
 ```{r}
 gff_path <- "data/Ankur/Saccharomyces_cerevisiae.gff3"
 
@@ -74,6 +76,64 @@ Scaffold_211 <- plotTracks(list(axis_track, track),
 ```
 
 ```{r}
+library(readxl)
+annotations <- read_excel("data/Ankur/5scaff2med.emapper.annotations.xlsx", skip = 2)
+
+GRanges <- import.gff3("data/Ankur/Saccharomyces_cerevisiae.gff3")
+GRanges
+```
+
+```{r}
+GRanges <- GRanges[GRanges$type=="mRNA"]
+
+symbol_to_attach <- match(GRanges$ID, annotations$query)
+
+GRanges$symbol <-annotations$Preferred_name[symbol_to_attach]
+
+
+GRanges$symbol[is.na(GRanges$symbol)] <- GRanges$ID[is.na(GRanges$symbol)]
 
 ```
 
+```{r}
+functional_track <- GeneRegionTrack(GRanges, 
+                             chromosome = seqlevels(GRanges)[211],
+                             name = "Predicted Genes - Functional Track",
+                             transcriptAnnotation = "symbol",
+                             background.title = "darkgreen")
+
+axis_track <- GenomeAxisTrack()
+
+track_functional <- plotTracks(list(axis_track, GRanges),
+           from = 7000, 
+           to = 18000,
+           chromosome = seqlevels(GRanges)[211],
+           main = "Funannotate Predictions: Scaffold 211")
+```
+
+```{r}
+annotations_eggnog_km <- readxl::read_excel("data/Ankur/5scaff2med.emapper.annotations.xlsx", skip = 2)
+
+GRanges_gff <- import.gff("data/Ankur/Saccharomyces_cerevisiae.gff3")
+
+match_gff_eggnog <- match(GRanges_gff$ID, annotations_eggnog_km$query)
+
+GRanges_gff$symbol <- annotations_eggnog_km$Preferred_name[match_gff_eggnog]
+
+GRanges_gff$symbol
+
+
+options(ucscChromosomeNames=FALSE)
+fung_track <- GeneRegionTrack(GRanges_gff, 
+                             chromosome = seqlevels(GRanges_gff)[211],
+                             name = "Predicted Genes",
+                             transcriptAnnotation = "symbol",
+                             background.title = "darkgreen")
+axis_track <- GenomeAxisTrack()
+
+plot_matches <- plotTracks(list(axis_track, fung_track),
+           from = 1, 
+           to = 18000,
+           chromosome = seqlevels(GRanges_gff)[211],
+           main = "Funannotate Predictions: Matches")
+```
