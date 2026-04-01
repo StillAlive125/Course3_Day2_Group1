@@ -4,6 +4,7 @@ format: html
 ---
 
 ```{r}
+#| echo: false
 #Loop that checks if the packages GO.db and AnnotationDbi are already installed
 #If not, install them
 
@@ -32,5 +33,47 @@ library("Biostrings")
 library("GO.db")
 library("AnnotationDbi")
 library("ggVennDiagram")
+```
+```{r}
+gff_path <- "data/Ankur/Saccharomyces_cerevisiae.gff3"
+
+txdb <- makeTxDbFromGFF(gff_path, format = "gff3")
+
+txdb
+
+biostring_assembly <- Biostrings::readDNAStringSet("data/Ankur/assembly.fasta")
+which(width(biostring_assembly)==max(width(biostring_assembly)))
+biostring_assembly[209]
+which(seqlevels(txdb)=="scaffold_289")
+seqlevels(txdb)
+
+```
+
+```{r}
+options(ucscChromosomeNames=FALSE)
+
+track <- GeneRegionTrack(txdb, 
+                             chromosome = seqlevels(txdb)[211],
+                             name = "Predicted Genes",
+                             transcriptAnnotation = "gene",
+                             background.title = "darkgreen")
+```
+
+```{r}
+axis_track <- GenomeAxisTrack()
+
+Scaffold_211 <- plotTracks(list(axis_track, track),
+           from = 1, 
+           to = 18000,
+           chromosome = seqlevels(txdb)[211],
+           main = "Funannotate Predictions: Scaffold 211")
+```
+
+```{r}
+# ggsave("figures/Ankur/Scaffold_211.png", get_last_plot())
+```
+
+```{r}
+
 ```
 
